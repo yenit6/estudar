@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        input[type = "text"]{
+            padding: 10px;
+            width: 200px;
+            margin-right: 10px;
+            font-size: 1em;
+        }
+
+        button{
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+
+        }
+
+        .btn{
+            background-color: #007bff;
+            color: white;
+        }
+
+        .remove-btn{
+            background-color: #dc3545;
+            color: white;
+            margin-left: 10px;
+        }
+
+        ul{
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li{
+            font-size: 1.2em;
+            margin-top: 10px;
+            left: 5%;
+        }
+
+
+
+    </style>
+
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>Lista de tarefas</h1>
+        <input type="text" id="inpt1" placeholder="digite uma tarefa">
+        <button class="btn" onclick="addTarefa()">adicionar tarefa</button>
+        <ul id="lista"></ul>
+    </div>
+</body>
+
+<script>
+    // Função para carregar as tarefas do localStorage
+    function carregarTarefas() {
+        const lista = document.getElementById("lista");
+        const tarefas = JSON.parse(localStorage.getItem("tarefas")) || []; // Pega as tarefas do localStorage
+
+        // Para cada tarefa armazenada, cria o item de lista e o botão de remoção
+        tarefas.forEach(function(tarefa) {
+            const li = document.createElement("li");
+            li.textContent = tarefa.texto;
+
+            const delBtn = document.createElement("button");
+            delBtn.textContent = "remover";
+            delBtn.className = "remove-btn";
+            delBtn.onclick = function () {
+                removerTarefa(tarefa.id);
+                lista.removeChild(li);
+            };
+
+            li.appendChild(delBtn);
+            lista.appendChild(li);
+        });
+    }
+
+    // Função para adicionar tarefa
+    function addTarefa() {
+        const input = document.getElementById("inpt1");
+        const lista = document.getElementById("lista");
+
+        if (input.value.trim() !== "") {
+            const tarefas = JSON.parse(localStorage.getItem("tarefas")) || []; // Pega as tarefas salvas ou um array vazio
+
+            // Criar um novo id único para a tarefa (baseado no timestamp)
+            const novaTarefa = {
+                id: Date.now(),
+                texto: input.value
+            };
+
+            // Adiciona a nova tarefa ao array de tarefas
+            tarefas.push(novaTarefa);
+
+            // Atualiza o localStorage com a lista de tarefas
+            localStorage.setItem("tarefas", JSON.stringify(tarefas));
+
+            // Criando a lista de tarefas visualmente
+            const li = document.createElement("li");
+            li.textContent = novaTarefa.texto;
+
+            const delBtn = document.createElement("button");
+            delBtn.textContent = "remover";
+            delBtn.className = "remove-btn";
+            delBtn.onclick = function () {
+                removerTarefa(novaTarefa.id);
+                lista.removeChild(li);
+            };
+
+            li.appendChild(delBtn);
+            lista.appendChild(li);
+
+            input.value = ""; // Limpa o input
+        }
+    }
+
+    // Função para remover tarefa
+    function removerTarefa(id) {
+        const tarefas = JSON.parse(localStorage.getItem("tarefas")) || [];
+
+        // Filtra as tarefas para remover a tarefa com o id correspondente
+        const tarefasAtualizadas = tarefas.filter(tarefa => tarefa.id !== id);
+
+        // Atualiza o localStorage com as tarefas restantes
+        localStorage.setItem("tarefas", JSON.stringify(tarefasAtualizadas));
+    }
+
+    // Carregar tarefas ao iniciar
+    window.onload = carregarTarefas;
+</script>
+</html>
